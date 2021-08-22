@@ -37,7 +37,9 @@ public class ProductMapper {
 	 * @return Product Value Object conversion
 	 */
 	public ProductVO convertToVO(final Product product) {
-		return modelMapper.map(product, ProductVO.class);
+		ProductVO productVO = modelMapper.map(product, ProductVO.class);
+		productVO.setComments(null);
+		return productVO;
 	}	
 
 	/**

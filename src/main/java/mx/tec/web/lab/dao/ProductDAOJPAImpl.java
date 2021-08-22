@@ -21,7 +21,7 @@ import mx.tec.web.lab.repository.ProductRepository;
  * JPA Implementation for Product Data Access Object
  * @author Enrique Sanchez
  */
-@Component
+@Component("jpa")
 public class ProductDAOJPAImpl implements ProductDAO {
 	/** A reference to the Product Repository */
 	@Resource

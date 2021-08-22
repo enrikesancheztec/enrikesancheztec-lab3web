@@ -11,10 +11,10 @@ import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import mx.tec.web.lab.dao.ProductDAO;
-import mx.tec.web.lab.repository.ProductRepository;
 import mx.tec.web.lab.vo.ProductVO;
 
 
@@ -29,6 +29,7 @@ public class ProductManager {
 	 * Reference to the Product DAO
 	 */
 	@Resource
+	@Qualifier("jdbc")
 	private ProductDAO productDAO;
 	
 	/**

@@ -15,8 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * Sku Entity to store the SKU attributtes
  * @author Enrique Sanchez

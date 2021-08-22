@@ -12,7 +12,7 @@ package mx.tec.web.lab.vo;
  * @version 2.0
  */
 public class SkuVO {
-	private String id;
+	private long id;
 	private String color;
 	private String size;
 	private double listPrice;
@@ -41,7 +41,7 @@ public class SkuVO {
 	 * @param mediumImageUrl The medium Image URL
 	 * @param largeImageUrl The large Image URL
 	 */
-	public SkuVO(String id, String color, String size, double listPrice, double salePrice, long quantityOnHand,
+	public SkuVO(long id, String color, String size, double listPrice, double salePrice, long quantityOnHand,
 			String smallImageUrl, String mediumImageUrl, String largeImageUrl) {
 		this.id = id;
 		this.color = color;
@@ -57,14 +57,14 @@ public class SkuVO {
 	/**
 	 * @return the id
 	 */
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
