@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import mx.tec.web.lab.service.CommentsService;
 import mx.tec.web.lab.vo.ProductVO;
+import mx.tec.web.lab.vo.SkuVO;
 
 /**
  * @author Enrique Sanchez
@@ -32,6 +33,25 @@ public class ProductDAOJdbcImpl implements ProductDAO {
 	
 	/** Description field **/
 	public static final String DESCRIPTION = "description";
+	
+	public static final String COLOR = "color";
+	
+	public static final String SIZE = "size";
+	
+	public static final String LISTPRICE = "listPrice";
+	
+	public static final String SALEPRICE = "salePrice";
+	
+	public static final String QUANTITYONHAND = "quantityOnHand";
+	
+	public static final String SMALLIMAGEURL = "smallImageUrl";
+	
+	public static final String MEDIUMIMAGEURL = "mediumImageUrl";
+	
+	public static final String LARGEIMAGEURL = "largeImageUrl";
+	
+	public static final String COMMENT = "comment";
+	
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
@@ -41,46 +61,74 @@ public class ProductDAOJdbcImpl implements ProductDAO {
 	
 	@Override
 	public List<ProductVO> findAll() {
-		String sql = "SELECT id, name, description FROM product";
+		String sql = "SELECT id, name, description FROM Product";
 
 		return jdbcTemplate.query(sql, (ResultSet rs) -> {
 			List<ProductVO> list = new ArrayList<>();
 
-			while(rs.next()){
-				ProductVO product = new ProductVO(
-					rs.getLong(ID),
-					rs.getString(NAME), 
-					rs.getString(DESCRIPTION), 
-					new ArrayList<>(),
-					commentService.getComments()
-				);
+			String sqlSkus = "SELECT id,color, size, listPrice, salePrice, quantityOnHand,smallImageUrl,mediumImageUrl, largeImageUrl from Sku WHERE parentProduct_id =?";
+
+			while (rs.next()) {
+
+				List<SkuVO> childSkus = new ArrayList<>();
+
+				jdbcTemplate.query(sqlSkus, new Object[] { rs.getLong(ID) }, new int[] { java.sql.Types.INTEGER },
+						(ResultSet rsSku) -> {
+
+							while (rsSku.next()) {
+								SkuVO sku = new SkuVO(rsSku.getLong(ID), rsSku.getString(COLOR), rsSku.getString(SIZE),
+										rsSku.getDouble(LISTPRICE), rsSku.getDouble(SALEPRICE),
+										rsSku.getLong(QUANTITYONHAND), rsSku.getString(SMALLIMAGEURL),
+										rsSku.getString(MEDIUMIMAGEURL), rsSku.getString(LARGEIMAGEURL)
+
+								);
+								childSkus.add(sku);
+							}
+						});
+
+				ProductVO product = new ProductVO(rs.getLong(ID), rs.getString(NAME), rs.getString(DESCRIPTION),
+						childSkus, commentService.getComments());
 
 				list.add(product);
 			}
-			
+
 			return list;
 		});
 	}
 
 	@Override
 	public Optional<ProductVO> findById(long id) {
-        String sql = "SELECT id, name, description FROM product WHERE id = ?";
-        
-		return jdbcTemplate.query(sql, new Object[]{id}, new int[]{java.sql.Types.INTEGER}, (ResultSet rs) -> {
+		String sql = "SELECT id, name, description FROM Product WHERE id = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { id }, new int[] { java.sql.Types.INTEGER }, (ResultSet rs) -> {
 			Optional<ProductVO> optionalProduct = Optional.empty();
 
-			if(rs.next()){
-				ProductVO product = new ProductVO(
-					rs.getLong(ID),
-					rs.getString(NAME), 
-					rs.getString(DESCRIPTION), 
-					new ArrayList<>(),
-					commentService.getComments()
-				);
-				
+			if (rs.next()) {
+				String sqlSkus = "SELECT id, color, size, listPrice, salePrice, quantityOnHand, smallImageUrl, mediumImageUrl, largeImageUrl from Sku WHERE parentProduct_id = ?";
+
+				List<SkuVO> childSkus = new ArrayList<>();
+
+				jdbcTemplate.query(sqlSkus, new Object[] { id }, new int[] { java.sql.Types.INTEGER },
+						(ResultSet rsSku) -> {
+							while (rsSku.next()) {
+								SkuVO sku = new SkuVO(rsSku.getLong(ID), rsSku.getString(COLOR), rsSku.getString(SIZE),
+										rsSku.getDouble(LISTPRICE), rsSku.getDouble(SALEPRICE),
+										rsSku.getLong(QUANTITYONHAND), rsSku.getString(SMALLIMAGEURL),
+										rsSku.getString(MEDIUMIMAGEURL), rsSku.getString(LARGEIMAGEURL)
+
+						);
+
+								childSkus.add(sku);
+
+							}
+
+						});
+				ProductVO product = new ProductVO(rs.getLong(ID), rs.getString(NAME), rs.getString(DESCRIPTION),
+						childSkus, commentService.getComments());
+
 				optionalProduct = Optional.of(product);
 			}
-			
+
 			return optionalProduct;
 		});
 	}
@@ -92,18 +140,32 @@ public class ProductDAOJdbcImpl implements ProductDAO {
 		return jdbcTemplate.query(sql, new Object[]{"%" + pattern + "%"}, new int[]{java.sql.Types.VARCHAR}, (ResultSet rs) -> {
 			List<ProductVO> list = new ArrayList<>();
 
-			while(rs.next()){
-				ProductVO product = new ProductVO(
-					rs.getLong(ID),
-					rs.getString(NAME), 
-					rs.getString(DESCRIPTION), 
-					new ArrayList<>(),
-					commentService.getComments()
-				);
-				
+			String sqlSkus = "SELECT id,color, size, listPrice, salePrice, quantityOnHand,smallImageUrl,mediumImageUrl, largeImageUrl from Sku WHERE parentProduct_id =?";
+			
+			while (rs.next()) {
+
+				List<SkuVO> childSkus = new ArrayList<>();
+
+				jdbcTemplate.query(sqlSkus, new Object[] { rs.getLong(ID) }, new int[] { java.sql.Types.INTEGER },
+						(ResultSet rsSku) -> {
+
+							while (rsSku.next()) {
+								SkuVO sku = new SkuVO(rsSku.getLong(ID), rsSku.getString(COLOR), rsSku.getString(SIZE),
+										rsSku.getDouble(LISTPRICE), rsSku.getDouble(SALEPRICE),
+										rsSku.getLong(QUANTITYONHAND), rsSku.getString(SMALLIMAGEURL),
+										rsSku.getString(MEDIUMIMAGEURL), rsSku.getString(LARGEIMAGEURL)
+
+								);
+								childSkus.add(sku);
+							}
+						});
+
+				ProductVO product = new ProductVO(rs.getLong(ID), rs.getString(NAME), rs.getString(DESCRIPTION),
+						childSkus, commentService.getComments());
+
 				list.add(product);
 			}
-			
+
 			return list;
 		});
 	}
@@ -116,9 +178,13 @@ public class ProductDAOJdbcImpl implements ProductDAO {
 
 	@Override
 	public void remove(ProductVO existingProduct) {
-		// TODO Auto-generated method stub
-
+		String sqlSku = "DELETE FROM Sku WHERE parentProduct_id =?";
+		this.jdbcTemplate.update(sqlSku, new Object[]{existingProduct.getId()}, new int[]{java.sql.Types.INTEGER});	
+		
+		String sqlProduct = "DELETE FROM Product WHERE id = ?";
+		this.jdbcTemplate.update(sqlProduct, new Object[]{existingProduct.getId()}, new int[]{java.sql.Types.INTEGER});
 	}
+
 
 	@Override
 	public void update(ProductVO existingProduct) {
